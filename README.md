@@ -1,166 +1,135 @@
-❤️ Heart Disease SQL Data Analyst Student Project
 
-This is a complete, hands-on student portfolio project based on a heart disease dataset — designed to help learners practice SQL and demonstrate real-world healthcare analytics skills. It walks through diagnostic profiling, risk segmentation, and time-series analysis using SQL.
+# Heart Disease Analysis Using SQL
 
-This project is perfect for:
+Overview
 
-🎓 Students learning SQL and data analytics
+This project explores heart disease data using SQL to uncover patterns, assess risk factors, and demonstrate practical database operations. It includes data cleaning, transformation, aggregation, and predictive logic—all built on a PostgreSQL table named `heart`.
 
-🩺 Anyone interested in healthcare data
+## Table Schema
 
-💼 Preparing for internships or entry-level roles in healthtech or public health
-
-📌 Project Overview
-
-The goal is to simulate how data analysts in healthcare use SQL to:
-
-✅ Explore patient demographics and disease prevalence
-
-✅ Analyze health indicators like cholesterol, ST depression, and heart rate
-
-✅ Segment patients into risk groups using multi-factor logic
-
-✅ Track disease cases over time for public health monitoring
-
-📁 Dataset Overview
-
-The dataset mimics a real-world clinical heart disease database. Each row represents a patient record with diagnostic features, test results, and disease status.
-
-🧾 Columns:
-
-age: Patient age
-
-sex: Gender (0 = female, 1 = male)
-
-cp: Chest pain type
-
-trestbps: Resting blood pressure
-
-chol: Serum cholesterol
-
-fbs: Fasting blood sugar
-
-restecg: Resting ECG results
-
-thalach: Maximum heart rate achieved
-
-exang: Exercise-induced angina
-
-oldpeak: ST depression
-
-slope: Slope of peak exercise ST segment
-
-ca: Number of major vessels colored by fluoroscopy
-
-thal: Thalassemia
-
-target: Heart disease presence (1 = disease, 0 = no disease)
-
-test_date: Date of diagnostic test
-
-🔧 Project Workflow
-
-Here’s a step-by-step breakdown of what we do in this project:
-
-1. Database & Table Creation
-
+```sql
 CREATE TABLE heart (
-  age INTEGER,
-  sex INTEGER,
-  cp INTEGER,
-  trestbps INTEGER,
-  chol INTEGER,
-  fbs INTEGER,
-  restecg INTEGER,
-  thalach INTEGER,
-  exang INTEGER,
-  oldpeak NUMERIC(4,2),
-  slope INTEGER,
-  ca INTEGER,
-  thal INTEGER,
-  target INTEGER,
-  test_date DATE
+  sku_id SERIAL PRIMARY KEY,
+  age INT,
+  sex INT,
+  cp INT,
+  trestbps INT,
+  chol INT,
+  fbs INT,
+  restecg INT,
+  thalach INT,
+  exang INT,
+  oldpeak REAL,
+  slope INT,
+  ca INT,
+  thal INT,
+  target INT
 );
+```
 
-2. Data Import
+- `target = 1` indicates presence of heart disease.
+- `sex = 1` is male, `sex = 0` is female.
+- `cp` refers to chest pain type (categorical).
+- `thalach` is maximum heart rate achieved.
+- `oldpeak` measures ST depression induced by exercise.
 
-Load CSV using pgAdmin or any PostgreSQL client
+---
 
-Ensure date format is compatible with test_date column
+##  Key Queries & Insights
 
-3. 🔍 Data Exploration
+##Age-Based Risk Report
+```sql
+SELECT age, sex, trestbps, thalach, oldpeak, target
+FROM heart
+WHERE age <= 45
+ORDER BY age;
+```
+> Filters and profiles patients aged 45 and below.
 
-Count total records
+---
 
-View sample rows
+##Disease Count by Gender
+```sql
+SELECT sex, SUM(CASE WHEN target = 1 THEN 1 ELSE 0 END) AS with_disease
+FROM heart
+GROUP BY sex;
+```
+---
 
-Check for nulls
+##Data Cleaning and inserting data
+```sql
+DELETE FROM heart WHERE sex = 1 AND cp = 0 AND age = 45;
 
-Identify gender distribution
+insert into heart (
+sku_id,age ,sex,cp, trestbps,chol,fbs,restecg,exang,oldpeak,slope,ca,thal,target
+) values (
+305,118,1,3,130,250,0,1,170,1,1.2,2,0,1); 
+select * from heart;
+```
 
-Compare disease vs non-disease counts
 
-4. 🧹 Data Cleaning
+---
 
-Remove rows with missing or invalid values
+##Chest Pain Analysis
+```sql
+SELECT DISTINCT cp FROM heart;
 
-Normalize column formats
+SELECT cp, AVG(trestbps) FROM heart GROUP BY cp;
+```
+> Identifies unique chest pain types and their average resting blood pressure.
 
-Convert categorical codes to readable labels (optional)
+---
 
-5. 📊 Business Insights
+## Unit Conversion
+```sql
+SELECT chol, chol * 0.0259 AS chol_mmol FROM heart;
+```
+> Converts cholesterol from mg/dL to mmol/L.
 
-Analyze disease prevalence by gender
+---
 
-Compare cholesterol levels across disease status
+## Missing Value Detection
+```sql
+SELECT COUNT(*) FROM heart WHERE chol IS NULL OR chol = 0;
+```
+---
 
-Measure ST depression among diseased patients
+## Window Functions
+```sql
+SELECT *, LAG(chol) OVER (ORDER BY age), LEAD(chol) OVER (ORDER BY age) FROM heart;
+```
+---
 
-Flag high-risk patients using thresholds
+## Predictive Risk Flag
+```sql
+SELECT *, CASE WHEN oldpeak > 2.0 AND thalach < 150 THEN 'High Risk' ELSE 'Normal' END AS risk_flag FROM heart;
+```
+> Flags patients with high risk based on key indicators.
 
-Segment patients into risk groups
+---
 
-Track disease cases over time
+# Join on trestbps = thalach
+```sql
+SELECT h.*, p.* FROM heart h JOIN heart p ON h.trestbps = p.thalach;
+```
+> Demonstrates join logic for pattern matching.
 
-🛠️ How to Use This Project
+---
 
-Clone the repository
+##  Learning Outcomes
 
-git clone https://github.com/your-username/heart-disease-sql-student-project.git
-cd heart-disease-sql-student-project
+- SQL for medical analytics and BI
+- Data cleaning and transformation
+- Aggregation, filtering, and window functions
+- Risk prediction using conditional logic
+- Schema design and real-world query structuring
 
-Open heart_disease_sql_analysis.sql
 
-This file contains:
+##  How to Run
 
-Table creation
+1. Set up a PostgreSQL database.
+2. Run the schema and insert queries.
+3. Execute analysis queries in sequence or explore interactively.
 
-Data exploration
-
-Data cleaning
-
-SQL business analysis
-
-Load the dataset into pgAdmin or any PostgreSQL client
-
-Create a database and run the SQL file
-
-Import the dataset
-
-Use the SQL queries to generate insights for dashboards or reports
-
-📜 License
-
-MIT — feel free to fork, star, and use in your student portfolio.
-
-👨‍💻 About the Author
-
-Hey, I’m Krishna — a student passionate about healthcare analytics. I simplify complex data into actionable insights that improve decision-making.
-
-🚀 Stay Connected
-
-If you enjoyed this project and want to keep learning, let’s connect!
-
-💼 LinkedIn: [Your LinkedIn] — connect professionally and grow your data career
-
-💡 Thanks for checking out the project! Feel free to star ⭐ this repo or share it with someone learning SQL.🚀
+##  Author
+Krishnaadupula
