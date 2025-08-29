@@ -118,11 +118,10 @@ SELECT h.*, p.* FROM heart h JOIN heart p ON h.trestbps = p.thalach;
 
 ##  Learning Outcomes
 
-- SQL for medical analytics and BI
+- real-world query structuring
 - Data cleaning and transformation
 - Aggregation, filtering, and window functions
-- Risk prediction using conditional logic
-- Schema design and real-world query structuring
+- Risk prediction using conditional logic 
 
 
 ##  How to Run
