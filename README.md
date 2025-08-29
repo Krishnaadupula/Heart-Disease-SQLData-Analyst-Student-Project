@@ -123,6 +123,9 @@ SELECT h.*, p.* FROM heart h JOIN heart p ON h.trestbps = p.thalach;
 - Aggregation, filtering, and window functions
 - Risk prediction using conditional logic 
 
+## Dataset Source
+
+This project uses the [Heart Disease Dataset by John Smith} (https://www.kaggle.com/datasets/winson13/heart-disease-dataset) on Kaggle
 
 ##  How to Run
 
